@@ -46,29 +46,34 @@ def abuelas(abuela, nieto):
   return conde((mama(abuela, padre), papa(padre, nieto)), (mama(abuela, padre), mama(padre, nieto)))
 
 
+def padres(padre, hijo):
+  return conde((papa(padre, hijo),) , (mama(padre, hijo),))
+
+
 def hermanos(hermano, hijo):
   padre = var()
-  return conde((papa(padre, hermano), papa(padre, hijo), neq(hermano, hijo)), (mama(padre, hermano), mama(padre, hijo), neq(hermano, hijo)))
+  return conde((padres(padre, hermano), papa(padre, hijo), neq(hermano, hijo)))
 
 
 def tios(tio, sobrino):
   padre = var()
-  return conde((hermanos(padre, tio), papa(padre, sobrino)), (hermanos(padre, tio), mama(padre, sobrino)))
+  return conde((hermanos(padre, tio), padres(padre, sobrino)))
 
 
 def primos(primo, hijo):
   padre = var()
-  return conde((tios(padre, primo), papa(padre, hijo)), (tios(padre, primo), mama(padre, hijo)))
+  return conde((tios(padre, primo), padres(padre, hijo)))
 
 
 def tios2(tio, sobrino):
   primo = var()
-  return conde((papa(tio, primo), primos(primo, sobrino)), (mama(tio, primo), primos(primo, sobrino)))
+  return conde((padres(tio, primo), primos(primo, sobrino)))
 
 
 x = var()
 print("Abuelos de Adrian:", run(0, x, abuelos(x, "Adrian")))
 print("Abuelas de Adrian:", run(0, x, abuelas(x, "Adrian")))
+print("Padres de Adrian:", run(0, x, padres(x, "Adrian")))
 print("Hermanos de Adrian:", set(run(0, x, hermanos(x, "Adrian"))))
 print("Tios de Adrian:", set(run(0, x, tios(x, "Adrian"))))
 print("Primos de Adrian:", set(run(0, x, primos(x, "Adrian"))))
